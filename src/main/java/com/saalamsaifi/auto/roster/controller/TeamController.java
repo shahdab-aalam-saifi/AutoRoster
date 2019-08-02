@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.saalamsaifi.auto.roster.constant.PathMapping;
 import com.saalamsaifi.auto.roster.data.repository.TeamRepository;
 import com.saalamsaifi.auto.roster.model.Team;
+import com.saalamsaifi.auto.roster.mongodb.collection.GroupCollection;
 import com.saalamsaifi.auto.roster.mongodb.collection.TeamCollection;
 
 @RestController
@@ -29,7 +30,13 @@ public class TeamController {
   @PutMapping(path = { PathMapping.URL_ADD_NEW_TEAM })
   public ResponseEntity<TeamCollection> add(@RequestBody @Valid Team team) {
     TeamCollection collection = teamRepository
-        .save(TeamCollection.builder().name(team.getName()).build());
+        .save(
+            TeamCollection
+                .builder()
+                .name(team.getName())
+                .maxWfrlAllowed(team.getMaxWfrlAllowed())
+                .build());
+    
     return ResponseEntity.ok(collection);
   }
 

@@ -1,5 +1,8 @@
 package com.saalamsaifi.auto.roster.model;
 
+import java.util.List;
+
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 import javax.validation.constraints.Size;
@@ -20,4 +23,7 @@ public class Team {
 	
 	@PositiveOrZero(message = "maxWfrlAllowed cannot be negative")
 	private int maxWfrlAllowed;
+	
+	@Valid
+	private List<Group> groups;
 }

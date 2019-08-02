@@ -21,9 +21,12 @@ import lombok.ToString;
 public class TeamCollection {
 	@Id
 	private String id;
+	
 	@Indexed(unique = true)
 	private String name;
+	
 	private int maxWfrlAllowed;
+	
 	@DBRef
 	private List<GroupCollection> groups;
 }

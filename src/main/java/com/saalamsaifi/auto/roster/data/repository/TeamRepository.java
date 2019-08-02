@@ -8,10 +8,6 @@ import com.saalamsaifi.auto.roster.mongodb.collection.TeamCollection;
 public interface TeamRepository extends MongoRepository<TeamCollection, String> {
 
   default TeamCollection updateById(TeamCollection team) {
-    if (team.getId().isEmpty()) {
-      return save(team);
-    }
-
     TeamCollection temp = findById(team.getId())
         .orElseThrow(() -> new InvalidTeamIdException(team.getId()));
 
