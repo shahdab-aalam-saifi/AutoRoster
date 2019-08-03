@@ -5,6 +5,9 @@ import java.util.List;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -12,11 +15,12 @@ import lombok.ToString;
 @Data
 @Builder
 @ToString
+@JsonInclude(value = Include.NON_NULL)
+
 public class Member {
   private String id;
 
   @NotBlank
-  @Size(min = 4, message = "Member name must not be less than 4 characters")
   private String name;
 
   private boolean isInterested;

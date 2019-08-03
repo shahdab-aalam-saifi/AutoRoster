@@ -1,66 +1,114 @@
 package com.saalamsaifi.auto.roster.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saalamsaifi.auto.roster.constant.PathMapping;
 import com.saalamsaifi.auto.roster.data.repository.TeamRepository;
 import com.saalamsaifi.auto.roster.model.Team;
-import com.saalamsaifi.auto.roster.mongodb.collection.GroupCollection;
-import com.saalamsaifi.auto.roster.mongodb.collection.TeamCollection;
+import com.saalamsaifi.auto.roster.mongodb.collection.Collection;
+import com.saalamsaifi.auto.roster.utils.Utils;
 
 @RestController
-@RequestMapping(path = { "/team" })
 public class TeamController {
+    @Autowired
+    private TeamRepository repository;
 
-  @Autowired
-  private TeamRepository teamRepository;
+    /**
+     * @param team
+     * @return
+     */
+    @RequestMapping(
+            method = { RequestMethod.POST, RequestMethod.PUT },
+            path = { PathMapping.URL_ADD_NEW_TEAM },
+            produces = { MediaType.APPLICATION_JSON_VALUE })
+    public ResponseEntity<Collection> add(@RequestBody @Valid Team team) {
+        if (team.getGroups() != null) {
+            team.getGroups().stream().forEach((group) -> {
+                group.setId(Utils.getObjectId());
 
-  @PutMapping(path = { PathMapping.URL_ADD_NEW_TEAM })
-  public ResponseEntity<TeamCollection> add(@RequestBody @Valid Team team) {
-    TeamCollection collection = teamRepository
-        .save(
-            TeamCollection
-                .builder()
+                if (group.getMembers() != null) {
+                    group.getMembers().forEach((member) -> {
+                        member.setId(Utils.getObjectId());
+                    });
+                }
+            });
+        }
+
+        Collection collection = Collection.builder()
+                .id(Utils.getObjectId())
                 .name(team.getName())
                 .maxWfrlAllowed(team.getMaxWfrlAllowed())
-                .build());
-    
-    return ResponseEntity.ok(collection);
-  }
+                .groups(team.getGroups())
+                .build();
 
-  @GetMapping(path = { PathMapping.URL_GET_TEAM_BY_ID })
-  public ResponseEntity<TeamCollection> getById(@RequestParam(required = true) String teamId) {
-    return ResponseEntity.ok(teamRepository.findById(teamId).orElse(null));
-  }
+        return ResponseEntity.ok(repository.save(collection));
+    }
 
-  @PostMapping(path = { PathMapping.URL_UPDATE_TEAM_BY_ID })
-  public ResponseEntity<TeamCollection> updateById(@Valid @RequestBody Team team) {
-    TeamCollection collection = teamRepository
-        .updateById(
-            TeamCollection
-                .builder()
-                .id(team.getId())
-                .name(team.getName())
-                .maxWfrlAllowed(team.getMaxWfrlAllowed())
-                .build());
-    return ResponseEntity.accepted().body(collection);
-  }
+    /**
+     * @param id
+     * @param team
+     * @return
+     */
+    @RequestMapping(
+            method = { RequestMethod.POST },
+            path = { PathMapping.URL_UPDATE_TEAM_BY_ID },
+            produces = { MediaType.APPLICATION_JSON_VALUE })
+    public ResponseEntity<Collection> update(@RequestParam(required = true, name = "id") String id,
+            @RequestBody @Valid Team team) {
+        Collection collection = repository.findById(id).orElseThrow(null);
 
-  @GetMapping(path = { PathMapping.URL_GET_ALL_TEAM })
-  public ResponseEntity<List<TeamCollection>> get() {
-    return ResponseEntity.ok(teamRepository.findAll());
-  }
+        collection.setName(team.getName());
+        collection.setMaxWfrlAllowed(team.getMaxWfrlAllowed());
+        collection.setGroups(team.getGroups());
+
+        return ResponseEntity.ok(repository.save(collection));
+    }
+
+    @RequestMapping(
+            method = { RequestMethod.GET },
+            path = { PathMapping.URL_GET_TEAM },
+            produces = { MediaType.APPLICATION_JSON_VALUE })
+    public ResponseEntity<String> get() {
+        List<JSONObject> list = new ArrayList<>();
+        repository.findAll().stream().forEach((team) -> {
+            JSONObject json = new JSONObject();
+            json.put("id", team.getId());
+            json.put("name", team.getName());
+            json.put("maxWfrlAllowed", team.getMaxWfrlAllowed());
+
+            list.add(json);
+        });
+        JSONArray array = new JSONArray(list);
+        return ResponseEntity.ok(array.toString());
+    }
+
+    @RequestMapping(
+            method = { RequestMethod.GET },
+            path = { PathMapping.URL_GET_TEAM },
+            produces = { MediaType.APPLICATION_JSON_VALUE },
+            params = { "id" })
+    public ResponseEntity<Collection> get(@RequestParam(required = true, name = "id") String id) {
+        if (id == null || id.isEmpty()) {
+            return null;
+        }
+
+        Collection collection = repository.findById(id).orElseThrow(null);
+
+        return ResponseEntity.ok(collection);
+    }
 
 }

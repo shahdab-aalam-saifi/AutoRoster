@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.saalamsaifi.auto.roster.model.Group;
 
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +18,7 @@ import lombok.ToString;
 @Builder
 @ToString
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TeamCollection {
+public class Collection {
 	@Id
 	private String id;
 	
@@ -27,6 +27,5 @@ public class TeamCollection {
 	
 	private int maxWfrlAllowed;
 	
-	@DBRef
-	private List<GroupCollection> groups;
+	private List<Group> groups;
 }
