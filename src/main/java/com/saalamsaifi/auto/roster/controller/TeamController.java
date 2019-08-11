@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.saalamsaifi.auto.roster.constant.PathMapping;
+import static com.saalamsaifi.auto.roster.constant.PathMapping.*;
 import com.saalamsaifi.auto.roster.data.repository.TeamRepository;
 import com.saalamsaifi.auto.roster.model.Team;
 import com.saalamsaifi.auto.roster.mongodb.collection.Collection;
@@ -33,7 +33,7 @@ public class TeamController {
      */
     @RequestMapping(
             method = { RequestMethod.POST, RequestMethod.PUT },
-            path = { PathMapping.URL_ADD_NEW_TEAM },
+            path = { URL_ADD_NEW_TEAM },
             produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<Collection> add(@RequestBody @Valid Team team) {
         if (team.getGroups() != null) {
@@ -65,7 +65,7 @@ public class TeamController {
      */
     @RequestMapping(
             method = { RequestMethod.POST },
-            path = { PathMapping.URL_UPDATE_TEAM_BY_ID },
+            path = { URL_UPDATE_TEAM_BY_ID },
             produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<Collection> update(@RequestParam(required = true, name = "id") String id,
             @RequestBody @Valid Team team) {
@@ -73,6 +73,19 @@ public class TeamController {
 
         collection.setName(team.getName());
         collection.setMaxWfrlAllowed(team.getMaxWfrlAllowed());
+        
+        if (team.getGroups() != null) {
+            team.getGroups().stream().forEach((group) -> {
+                group.setId(Utils.getObjectId());
+
+                if (group.getMembers() != null) {
+                    group.getMembers().forEach((member) -> {
+                        member.setId(Utils.getObjectId());
+                    });
+                }
+            });
+        }
+
         collection.setGroups(team.getGroups());
 
         return ResponseEntity.ok(repository.save(collection));
@@ -80,7 +93,7 @@ public class TeamController {
 
     @RequestMapping(
             method = { RequestMethod.GET },
-            path = { PathMapping.URL_GET_TEAM },
+            path = { URL_GET_TEAM },
             produces = { MediaType.APPLICATION_JSON_VALUE })
     public ResponseEntity<String> get() {
         List<JSONObject> list = new ArrayList<>();
@@ -98,7 +111,7 @@ public class TeamController {
 
     @RequestMapping(
             method = { RequestMethod.GET },
-            path = { PathMapping.URL_GET_TEAM },
+            path = { URL_GET_TEAM },
             produces = { MediaType.APPLICATION_JSON_VALUE },
             params = { "id" })
     public ResponseEntity<Collection> get(@RequestParam(required = true, name = "id") String id) {
