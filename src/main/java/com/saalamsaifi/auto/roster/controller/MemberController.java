@@ -13,13 +13,12 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,11 +26,15 @@ import com.saalamsaifi.auto.roster.data.repository.TeamRepository;
 import com.saalamsaifi.auto.roster.model.Group;
 import com.saalamsaifi.auto.roster.model.Member;
 import com.saalamsaifi.auto.roster.mongodb.collection.Collection;
+import com.saalamsaifi.auto.roster.service.IdentityService;
 
 @RestController
 public class MemberController {
 	@Autowired
 	private TeamRepository repository;
+
+	@Autowired
+	private IdentityService identityService;
 
 	/**
 	 * @param teamId
@@ -39,8 +42,8 @@ public class MemberController {
 	 * @param member
 	 * @return
 	 */
-	@RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT }, path = { URL_ADD_NEW_MEMBER }, produces = {
-			MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID, GROUP_ID })
+	@PostMapping(path = { URL_ADD_NEW_MEMBER }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID,
+			GROUP_ID })
 	public ResponseEntity<Collection> add(@RequestParam(required = true, name = TEAM_ID) String teamId,
 			@RequestParam(required = true, name = GROUP_ID) String groupId, @RequestBody @Valid Member member) {
 		Collection collection = repository.findById(teamId).orElseThrow(null);
@@ -50,7 +53,7 @@ public class MemberController {
 					.toList());
 
 			if (list != null && !list.isEmpty()) {
-				member.setId(ObjectId.get().toHexString());
+				identityService.assignId(member);
 
 				List<Member> members = list.get(0).getMembers();
 
@@ -76,8 +79,8 @@ public class MemberController {
 	 * @param member
 	 * @return
 	 */
-	@RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT }, path = { URL_UPDATE_MEMBER_BY_ID }, produces = {
-			MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID, GROUP_ID, MEMBER_ID })
+	@PostMapping(path = { URL_UPDATE_MEMBER_BY_ID }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = {
+			TEAM_ID, GROUP_ID, MEMBER_ID })
 	public ResponseEntity<Collection> update(@RequestParam(required = true, name = TEAM_ID) String teamId,
 			@RequestParam(required = true, name = GROUP_ID) String groupId,
 			@RequestParam(required = true, name = MEMBER_ID) String memberId, @RequestBody @Valid Member member) {
@@ -117,8 +120,8 @@ public class MemberController {
 		}
 	}
 
-	@RequestMapping(method = { RequestMethod.GET }, path = { URL_GET_GROUP }, produces = {
-			MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID, GROUP_ID, MEMBER_ID })
+	@GetMapping(path = { URL_GET_GROUP }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID, GROUP_ID,
+			MEMBER_ID })
 	public ResponseEntity<Group> get(@RequestParam(required = true, name = TEAM_ID) String teamId,
 			@RequestParam(required = true, name = GROUP_ID) String groupId,
 			@RequestParam(required = true, name = MEMBER_ID) String memberId) {

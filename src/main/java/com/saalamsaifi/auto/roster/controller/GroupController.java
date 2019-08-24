@@ -12,43 +12,39 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.saalamsaifi.auto.roster.data.repository.TeamRepository;
 import com.saalamsaifi.auto.roster.model.Group;
 import com.saalamsaifi.auto.roster.mongodb.collection.Collection;
+import com.saalamsaifi.auto.roster.service.IdentityService;
 
 @RestController
 public class GroupController {
 	@Autowired
 	private TeamRepository repository;
 
+	@Autowired
+	private IdentityService identityService;
+
 	/**
 	 * @param teamId
 	 * @param group
 	 * @return
 	 */
-	@RequestMapping(method = { RequestMethod.POST, RequestMethod.PUT }, path = { URL_ADD_NEW_GROUP }, produces = {
-			MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID })
+	@PostMapping(path = { URL_ADD_NEW_GROUP }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID })
 	public ResponseEntity<List<Group>> add(@RequestParam(required = true, name = TEAM_ID) String teamId,
 			@RequestBody @Valid Group group) {
 		Collection collection = repository.findById(teamId).orElseThrow(null);
 
-		group.setId(ObjectId.get().toHexString());
-
-		if (group.getMembers() != null) {
-			group.getMembers().forEach((member) -> {
-				member.setId(ObjectId.get().toHexString());
-			});
-		}
+		identityService.assignId(group);
 
 		List<Group> list = collection.getGroups();
 
@@ -69,8 +65,8 @@ public class GroupController {
 	 * @param group
 	 * @return
 	 */
-	@RequestMapping(method = { RequestMethod.POST }, path = { URL_UPDATE_GROUP_BY_ID }, produces = {
-			MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID, GROUP_ID })
+	@PostMapping(path = { URL_UPDATE_GROUP_BY_ID }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID,
+			GROUP_ID })
 	public ResponseEntity<List<Group>> update(@RequestParam(required = true, name = TEAM_ID) String teamId,
 			@RequestParam(required = true, name = GROUP_ID) String groupId, @RequestBody @Valid Group group) {
 		Collection collection = repository.findById(teamId).orElseThrow(null);
@@ -87,9 +83,7 @@ public class GroupController {
 					g.setMaxWfrlAllowed(group.getMaxWfrlAllowed());
 
 					if (group.getMembers() != null) {
-						group.getMembers().forEach(member -> {
-							member.setId(ObjectId.get().toHexString());
-						});
+						group.getMembers().forEach(member -> identityService.assignId(member));
 						g.setMembers(group.getMembers());
 					}
 				});
@@ -103,8 +97,7 @@ public class GroupController {
 	 * @param teamId
 	 * @return
 	 */
-	@RequestMapping(method = { RequestMethod.GET }, path = { URL_GET_GROUP }, produces = {
-			MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID })
+	@GetMapping(path = { URL_GET_GROUP }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID })
 	public ResponseEntity<List<Group>> get(@RequestParam(required = true, name = TEAM_ID) String teamId) {
 		Collection collection = repository.findById(teamId).orElseThrow(null);
 
@@ -120,8 +113,8 @@ public class GroupController {
 	 * @param groupId
 	 * @return
 	 */
-	@RequestMapping(method = { RequestMethod.GET }, path = { URL_GET_GROUP }, produces = {
-			MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID, GROUP_ID })
+	@GetMapping(path = { URL_GET_GROUP }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID,
+			GROUP_ID })
 	public ResponseEntity<Group> get(@RequestParam(required = true, name = TEAM_ID) String teamId,
 			@RequestParam(required = true, name = GROUP_ID) String groupId) {
 		Collection collection = repository.findById(teamId).orElseThrow(null);
@@ -131,13 +124,10 @@ public class GroupController {
 		} else {
 			List<Group> list = collection.getGroups().stream().filter(g -> g.getId().equals(groupId)).collect(Collectors
 					.toList());
-			if (list != null && list.isEmpty()) {
+			if (list == null || list.isEmpty()) {
 				return ResponseEntity.ok().body(null);
 			} else {
-				if (list.size() > 0) {
-					return ResponseEntity.ok().body(list.get(0));
-				}
-				return ResponseEntity.badRequest().build();
+				return ResponseEntity.ok().body(list.get(0));
 			}
 		}
 	}

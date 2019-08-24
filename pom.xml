@@ -17,7 +17,6 @@
 
 	<properties>
 		<java.version>8</java.version>
-		<swagger2.version>2.9.2</swagger2.version>
 	</properties>
 
 	<dependencies>
@@ -61,7 +60,6 @@
 			<artifactId>json</artifactId>
 			<version>20180813</version>
 		</dependency>
-
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -82,7 +80,7 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-
+			<!-- JaCoCo -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
