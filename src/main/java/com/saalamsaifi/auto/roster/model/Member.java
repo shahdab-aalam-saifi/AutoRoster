@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -17,12 +20,14 @@ import lombok.ToString;
 @JsonInclude(value = Include.NON_NULL)
 
 public class Member {
-  private String id;
+	@Field(value = "memberId")
+	private String id;
 
-  @NotBlank
-  private String name;
+	@NotBlank
+	@Indexed(unique = true)
+	private String name;
 
-  private boolean isInterested;
-  private List<String> likes;
-  private List<String> dislikes;
+	private boolean isInterested;
+	private List<String> likes;
+	private List<String> dislikes;
 }

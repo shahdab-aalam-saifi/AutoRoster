@@ -6,6 +6,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -18,14 +21,16 @@ import lombok.ToString;
 @ToString
 @JsonInclude(value = Include.NON_NULL)
 public class Group {
-    private String id;
+	@Field(value = "groupId")
+	private String id;
 
-    @NotBlank
-    private String name;
+	@NotBlank
+	@Indexed(unique = true)
+	private String name;
 
-    @PositiveOrZero
-    private int maxWfrlAllowed;
+	@PositiveOrZero
+	private int maxWfrlAllowed;
 
-    @Valid
-    private List<Member> members;
+	@Valid
+	private List<Member> members;
 }

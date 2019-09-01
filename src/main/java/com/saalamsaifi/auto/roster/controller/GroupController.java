@@ -42,13 +42,17 @@ public class GroupController {
 	@PostMapping(path = { URL_ADD_NEW_GROUP }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID })
 	public ResponseEntity<List<Group>> add(@RequestParam(required = true, name = TEAM_ID) String teamId,
 			@RequestBody @Valid Group group) {
-		Collection collection = repository.findById(teamId).orElseThrow(null);
+		Collection collection = repository.findById(teamId).orElse(null);
+
+		if (collection == null) {
+			return ResponseEntity.notFound().build();
+		}
 
 		identityService.assignId(group);
 
 		List<Group> list = collection.getGroups();
 
-		if (!(list == null || list.isEmpty())) {
+		if (list == null) {
 			List<Group> groups = new ArrayList<>();
 			groups.add(group);
 			collection.setGroups(groups);
@@ -69,25 +73,27 @@ public class GroupController {
 			GROUP_ID })
 	public ResponseEntity<List<Group>> update(@RequestParam(required = true, name = TEAM_ID) String teamId,
 			@RequestParam(required = true, name = GROUP_ID) String groupId, @RequestBody @Valid Group group) {
-		Collection collection = repository.findById(teamId).orElseThrow(null);
+		Collection collection = repository.findById(teamId).orElse(null);
 
-		if (collection.getGroups() != null) {
-			List<Group> list = collection.getGroups().stream().filter(g -> g.getId().equals(groupId)).collect(Collectors
-					.toList());
+		if (collection == null || collection.getGroups() == null) {
+			return ResponseEntity.notFound().build();
+		}
 
-			if (list.isEmpty()) {
-				return ResponseEntity.badRequest().build();
-			} else {
-				list.stream().findFirst().ifPresent(g -> {
-					g.setName(group.getName());
-					g.setMaxWfrlAllowed(group.getMaxWfrlAllowed());
+		List<Group> list = collection.getGroups().stream().filter(g -> g.getId().equals(groupId)).collect(Collectors
+				.toList());
 
-					if (group.getMembers() != null) {
-						group.getMembers().forEach(member -> identityService.assignId(member));
-						g.setMembers(group.getMembers());
-					}
-				});
-			}
+		if (list.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		} else {
+			list.stream().findFirst().ifPresent(g -> {
+				g.setName(group.getName());
+				g.setMaxWfrlAllowed(group.getMaxWfrlAllowed());
+
+				if (group.getMembers() != null) {
+					group.getMembers().forEach(member -> identityService.assignId(member));
+					g.setMembers(group.getMembers());
+				}
+			});
 		}
 
 		return ResponseEntity.ok().body(repository.save(collection).getGroups());
@@ -99,10 +105,14 @@ public class GroupController {
 	 */
 	@GetMapping(path = { URL_GET_GROUP }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID })
 	public ResponseEntity<List<Group>> get(@RequestParam(required = true, name = TEAM_ID) String teamId) {
-		Collection collection = repository.findById(teamId).orElseThrow(null);
+		Collection collection = repository.findById(teamId).orElse(null);
+
+		if (collection == null) {
+			return ResponseEntity.badRequest().build();
+		}
 
 		if (collection.getGroups() == null) {
-			return ResponseEntity.ok().body(null);
+			return ResponseEntity.notFound().build();
 		} else {
 			return ResponseEntity.ok().body(collection.getGroups());
 		}
@@ -117,15 +127,19 @@ public class GroupController {
 			GROUP_ID })
 	public ResponseEntity<Group> get(@RequestParam(required = true, name = TEAM_ID) String teamId,
 			@RequestParam(required = true, name = GROUP_ID) String groupId) {
-		Collection collection = repository.findById(teamId).orElseThrow(null);
+		Collection collection = repository.findById(teamId).orElse(null);
+
+		if (collection == null) {
+			return ResponseEntity.badRequest().build();
+		}
 
 		if (collection.getGroups() == null) {
-			return ResponseEntity.ok().body(null);
+			return ResponseEntity.notFound().build();
 		} else {
 			List<Group> list = collection.getGroups().stream().filter(g -> g.getId().equals(groupId)).collect(Collectors
 					.toList());
-			if (list == null || list.isEmpty()) {
-				return ResponseEntity.ok().body(null);
+			if (list.isEmpty()) {
+				return ResponseEntity.notFound().build();
 			} else {
 				return ResponseEntity.ok().body(list.get(0));
 			}
