@@ -6,7 +6,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
 
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,7 +24,6 @@ public class Group {
 	private String id;
 
 	@NotBlank
-	@Indexed(unique = true)
 	private String name;
 
 	@PositiveOrZero

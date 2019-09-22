@@ -23,7 +23,7 @@ public class IdentityServiceImpl implements IdentityService {
 		team.setId(sequence.getNextTeamSequence());
 
 		if (team.getGroups() != null) {
-			team.getGroups().stream().forEach(group -> assignId(group));
+			team.getGroups().stream().forEach(this::assignId);
 		}
 	}
 
@@ -36,7 +36,7 @@ public class IdentityServiceImpl implements IdentityService {
 		group.setId(sequence.getNextGroupSequence());
 
 		if (group.getMembers() != null) {
-			group.getMembers().stream().forEach(member -> assignId(member));
+			group.getMembers().stream().forEach(this::assignId);
 		}
 	}
 

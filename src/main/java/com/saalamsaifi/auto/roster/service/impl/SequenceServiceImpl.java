@@ -13,6 +13,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import com.saalamsaifi.auto.roster.mongodb.collection.GroupSequence;
@@ -25,11 +26,12 @@ public class SequenceServiceImpl implements SequenceService {
 	@Autowired
 	private MongoOperations operations;
 
-	private Object getCounter(String sequenceName, Class<? extends Object> _class) {
+	private Object getCounter(String sequenceName, Class<? extends Object> aClass) {
 		return operations.findAndModify(query(where("_id").is(sequenceName)), new Update().inc("sequence", 00001),
-				options().returnNew(true).upsert(true), _class);
+				options().returnNew(true).upsert(true), aClass);
 	}
 
+	@NonNull
 	private String format(String sequence) {
 		return String.format("%05d", Long.parseLong(sequence));
 	}

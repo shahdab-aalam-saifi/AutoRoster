@@ -3,7 +3,7 @@ server:
   
 logging:
   level:
-    com.saalamsaifi.auto.roster: debug
+    com.saalamsaifi.auto.roster: info
     org:
       mongodb: info
       springframework.boot.autoconfigure.mongo.embedded: info

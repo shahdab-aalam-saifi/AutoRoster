@@ -1,8 +1,8 @@
 package com.saalamsaifi.auto.roster.controller;
 
+import static com.saalamsaifi.auto.roster.util.TestUtils.stringToJsonObject;
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -24,6 +24,7 @@ import com.saalamsaifi.auto.roster.data.repository.TeamRepository;
 import com.saalamsaifi.auto.roster.model.Group;
 import com.saalamsaifi.auto.roster.model.Team;
 import com.saalamsaifi.auto.roster.mongodb.collection.Collection;
+import com.saalamsaifi.auto.roster.util.TestUtils;
 
 @IfProfileValue(name = "spring.profiles.active", values = { "test" })
 @RunWith(SpringRunner.class)
@@ -49,18 +50,12 @@ public class GroupControllerTest {
 	private static final String GROUP_JSON = "{\"name\":\"SMAPI\",\"maxWfrlAllowed\":2,\"members\":[{\"name\":\"Shahdab Aalam Saifi\",\"isInterested\":true,\"likes\":[0],\"dislikes\":[4]}]}";
 	private static final String GROUP_JSON_WITHOUT_MEMBERS = "{\"name\":\"SMAPI\",\"maxWfrlAllowed\":2}";
 
-	private Object stringToObject(String json, Class<? extends Object> _class) {
-		try {
-			return mapper.readValue(json, _class);
-		} catch (IOException exception) {
-			exception.printStackTrace();
-			return null;
-		}
-	}
-
 	@Before
 	public void setup() {
 		teamRepository.deleteAll();
+
+		// TODO: Improve by avoiding setting ObjectMapper every time
+		TestUtils.setObjectMapper(mapper);
 	}
 
 	@After
@@ -73,7 +68,8 @@ public class GroupControllerTest {
 	 */
 	@Test(expected = IllegalArgumentException.class)
 	public void addNewGroup_WhenTeamIsNull_GroupJson_ResponseCode404() {
-		ResponseEntity<List<Group>> response = controller.add(null, (Group) stringToObject(GROUP_JSON, Group.class));
+		ResponseEntity<List<Group>> response = controller.add(null,
+				(Group) stringToJsonObject(GROUP_JSON, Group.class));
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
 
@@ -82,7 +78,8 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void addNewGroup_WhenTeamIsInvalid_GroupJson_ResponseCode404() {
-		ResponseEntity<List<Group>> response = controller.add("T01", (Group) stringToObject(GROUP_JSON, Group.class));
+		ResponseEntity<List<Group>> response = controller.add("T01",
+				(Group) stringToJsonObject(GROUP_JSON, Group.class));
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
 
@@ -91,9 +88,10 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void addNewGroup_WhenTeamGroupsIsNull_GroupJson_ResponseCode200() {
-		TEAM_ID = teamController.add((Team) stringToObject(TEAM_JSON_WITHOUT_GROUPS, Team.class)).getBody().getId();
+		TEAM_ID = teamController.add((Team) stringToJsonObject(TEAM_JSON_WITHOUT_GROUPS, Team.class)).getBody().getId();
 
-		ResponseEntity<List<Group>> response = controller.add(TEAM_ID, (Group) stringToObject(GROUP_JSON, Group.class));
+		ResponseEntity<List<Group>> response = controller.add(TEAM_ID,
+				(Group) stringToJsonObject(GROUP_JSON, Group.class));
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 	}
 
@@ -102,9 +100,10 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void addNewGroup_WhenTeamHaveGroups_GroupJson_ResponseCode200() {
-		TEAM_ID = teamController.add((Team) stringToObject(TEAM_JSON, Team.class)).getBody().getId();
+		TEAM_ID = teamController.add((Team) stringToJsonObject(TEAM_JSON, Team.class)).getBody().getId();
 
-		ResponseEntity<List<Group>> response = controller.add(TEAM_ID, (Group) stringToObject(GROUP_JSON, Group.class));
+		ResponseEntity<List<Group>> response = controller.add(TEAM_ID,
+				(Group) stringToJsonObject(GROUP_JSON, Group.class));
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 	}
 
@@ -113,8 +112,8 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void updateGroup_WhenTeamAndGroupIsNotAvailable_ResponseCode404() {
-		ResponseEntity<List<Group>> response = controller.update("T01", "G01", (Group) stringToObject(GROUP_JSON,
-				Group.class));
+		ResponseEntity<List<Group>> response = controller.update("G01",
+				(Group) stringToJsonObject(GROUP_JSON, Group.class));
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
 
@@ -123,10 +122,10 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void updateGroup_WhenTeamGroupIsNotAvailable_GroupIdIsNotAvailable_ResponseCode404() {
-		TEAM_ID = teamController.add((Team) stringToObject(TEAM_JSON_WITHOUT_GROUPS, Team.class)).getBody().getId();
+		teamController.add((Team) stringToJsonObject(TEAM_JSON_WITHOUT_GROUPS, Team.class)).getBody().getId();
 
-		ResponseEntity<List<Group>> response = controller.update(TEAM_ID, "G01", (Group) stringToObject(GROUP_JSON,
-				Group.class));
+		ResponseEntity<List<Group>> response = controller.update("G01",
+				(Group) stringToJsonObject(GROUP_JSON, Group.class));
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
 
@@ -135,10 +134,10 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void updateGroup_WhenGroupIsNotAvailableInTeam_ResponseCode404() {
-		TEAM_ID = teamController.add((Team) stringToObject(TEAM_JSON, Team.class)).getBody().getId();
+		teamController.add((Team) stringToJsonObject(TEAM_JSON, Team.class)).getBody().getId();
 
-		ResponseEntity<List<Group>> response = controller.update(TEAM_ID, "G01", (Group) stringToObject(GROUP_JSON,
-				Group.class));
+		ResponseEntity<List<Group>> response = controller.update("G01",
+				(Group) stringToJsonObject(GROUP_JSON, Group.class));
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
 
@@ -147,14 +146,13 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void updateGroup_WhenTeamGroupIsAvailable_GroupIdIsAvailable_ResponseCode200() {
-		Collection collection = teamController.add((Team) stringToObject(TEAM_JSON, Team.class)).getBody();
-		TEAM_ID = collection.getId();
+		Collection collection = teamController.add((Team) stringToJsonObject(TEAM_JSON, Team.class)).getBody();
 		String groupId = collection.getGroups().get(0).getId();
 
-		ResponseEntity<List<Group>> response = controller.update(TEAM_ID, groupId, (Group) stringToObject(GROUP_JSON,
-				Group.class));
-		System.out.println(MessageFormat.format("Query: id: {0} group: {1}", groupId, teamRepository.findByGroupId(
-				groupId)));
+		ResponseEntity<List<Group>> response = controller.update(groupId,
+				(Group) stringToJsonObject(GROUP_JSON, Group.class));
+		System.out.println(
+				MessageFormat.format("Query: id: {0} group: {1}", groupId, teamRepository.findByGroupId(groupId)));
 		System.out.println(MessageFormat.format("Response: id: {0} group: {1}", groupId, response.getBody()));
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 	}
@@ -164,12 +162,11 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void updateGroup_WhenTeamGroupIsAvailable_GroupMemberIsNotAvailable_ResponseCode200() {
-		Collection collection = teamController.add((Team) stringToObject(TEAM_JSON, Team.class)).getBody();
-		TEAM_ID = collection.getId();
+		Collection collection = teamController.add((Team) stringToJsonObject(TEAM_JSON, Team.class)).getBody();
 		String groupId = collection.getGroups().get(0).getId();
 
-		ResponseEntity<List<Group>> response = controller.update(TEAM_ID, groupId, (Group) stringToObject(
-				GROUP_JSON_WITHOUT_MEMBERS, Group.class));
+		ResponseEntity<List<Group>> response = controller.update(groupId,
+				(Group) stringToJsonObject(GROUP_JSON_WITHOUT_MEMBERS, Group.class));
 		assertEquals(HttpStatus.OK, response.getStatusCode());
 	}
 
@@ -178,10 +175,10 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void get_WhenGroupIsAvailable_GroupList() {
-		Collection collection = teamController.add((Team) stringToObject(TEAM_JSON, Team.class)).getBody();
+		Collection collection = teamController.add((Team) stringToJsonObject(TEAM_JSON, Team.class)).getBody();
 		TEAM_ID = collection.getId();
 
-		ResponseEntity<List<Group>> response = controller.get(TEAM_ID);
+		ResponseEntity<List<Group>> response = controller.getByTeamId(TEAM_ID);
 
 		assertEquals(1, response.getBody().size());
 	}
@@ -191,11 +188,11 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void get_WhenGroupIsNotAvailable_ResponseCode404() {
-		Collection collection = teamController.add((Team) stringToObject(TEAM_JSON_WITHOUT_GROUPS, Team.class))
+		Collection collection = teamController.add((Team) stringToJsonObject(TEAM_JSON_WITHOUT_GROUPS, Team.class))
 				.getBody();
 		TEAM_ID = collection.getId();
 
-		ResponseEntity<List<Group>> response = controller.get(TEAM_ID);
+		ResponseEntity<List<Group>> response = controller.getByTeamId(TEAM_ID);
 
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
@@ -205,9 +202,9 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void get_WhenTeamIsNotAvailable_ResponseCode400() {
-		teamController.add((Team) stringToObject(TEAM_JSON_WITHOUT_GROUPS, Team.class)).getBody();
+		teamController.add((Team) stringToJsonObject(TEAM_JSON_WITHOUT_GROUPS, Team.class)).getBody();
 
-		ResponseEntity<List<Group>> response = controller.get("T01");
+		ResponseEntity<List<Group>> response = controller.getByTeamId("T01");
 
 		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
@@ -217,11 +214,10 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void getById_WhenGroupIsAvailable_Group() {
-		Collection collection = teamController.add((Team) stringToObject(TEAM_JSON, Team.class)).getBody();
-		TEAM_ID = collection.getId();
+		Collection collection = teamController.add((Team) stringToJsonObject(TEAM_JSON, Team.class)).getBody();
 		String groupId = collection.getGroups().get(0).getId();
 
-		ResponseEntity<Group> response = controller.get(TEAM_ID, groupId);
+		ResponseEntity<Group> response = controller.getByGroupId(groupId);
 
 		assertEquals(groupId, response.getBody().getId());
 	}
@@ -231,10 +227,9 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void getById_WhenGroupIsNotAvailable_ResponseCode404() {
-		Collection collection = teamController.add((Team) stringToObject(TEAM_JSON, Team.class)).getBody();
-		TEAM_ID = collection.getId();
+		teamController.add((Team) stringToJsonObject(TEAM_JSON, Team.class)).getBody();
 
-		ResponseEntity<Group> response = controller.get(TEAM_ID, "G01");
+		ResponseEntity<Group> response = controller.getByGroupId("G01");
 
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 	}
@@ -244,24 +239,10 @@ public class GroupControllerTest {
 	 */
 	@Test
 	public void getById_WhenTeamGroupIsNull_ResponseCode404() {
-		Collection collection = teamController.add((Team) stringToObject(TEAM_JSON_WITHOUT_GROUPS, Team.class))
-				.getBody();
-		TEAM_ID = collection.getId();
+		teamController.add((Team) stringToJsonObject(TEAM_JSON_WITHOUT_GROUPS, Team.class)).getBody();
 
-		ResponseEntity<Group> response = controller.get(TEAM_ID, "G01");
+		ResponseEntity<Group> response = controller.getByGroupId("G01");
 
 		assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-	}
-
-	/**
-	 * 
-	 */
-	@Test
-	public void getById_WhenTeamIsNotAvailable_ResponseCode200() {
-		teamController.add((Team) stringToObject(TEAM_JSON, Team.class)).getBody();
-
-		ResponseEntity<Group> response = controller.get("T01", "G01");
-
-		assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 	}
 }

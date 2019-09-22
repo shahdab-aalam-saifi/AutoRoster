@@ -5,7 +5,6 @@ import static com.saalamsaifi.auto.roster.constant.PathMapping.URL_GET_GROUP;
 import static com.saalamsaifi.auto.roster.constant.PathMapping.URL_UPDATE_MEMBER_BY_ID;
 import static com.saalamsaifi.auto.roster.constant.RequestParameter.GROUP_ID;
 import static com.saalamsaifi.auto.roster.constant.RequestParameter.MEMBER_ID;
-import static com.saalamsaifi.auto.roster.constant.RequestParameter.TEAM_ID;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +15,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,62 +42,73 @@ public class MemberController {
 	 * @param member
 	 * @return
 	 */
-	@PostMapping(path = { URL_ADD_NEW_MEMBER }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID,
-			GROUP_ID })
-	public ResponseEntity<Collection> add(@RequestParam(required = true, name = TEAM_ID) String teamId,
-			@RequestParam(required = true, name = GROUP_ID) String groupId, @RequestBody @Valid Member member) {
-		Collection collection = repository.findById(teamId).orElseThrow(null);
+	@PostMapping(path = { URL_ADD_NEW_MEMBER }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { GROUP_ID })
+	public ResponseEntity<Collection> add(@RequestParam(required = true, name = GROUP_ID) String groupId,
+			@RequestBody @Valid Member member) {
 
-		if (collection.getGroups() != null) {
-			List<Group> list = collection.getGroups().stream().filter(g -> g.getId().equals(groupId)).collect(Collectors
-					.toList());
+		Collection collection = repository.findByGroupId(groupId).orElse(null);
 
-			if (list != null && !list.isEmpty()) {
-				identityService.assignId(member);
+		if (collection != null) {
+			List<Group> list = collection.getGroups().stream().filter(g -> g.getId().equals(groupId))
+					.collect(Collectors.toList());
 
-				List<Member> members = list.get(0).getMembers();
+			identityService.assignId(member);
 
-				if (members != null && !members.isEmpty()) {
-					members.add(member);
-				} else {
-					List<Member> temp = new ArrayList<>();
-					temp.add(member);
-				}
+			Group group = list.get(0);
 
-				return ResponseEntity.ok().body(repository.save(collection));
+			List<Member> members = group.getMembers();
+
+			if (members != null && !members.isEmpty()) {
+				members.add(member);
 			} else {
-				return ResponseEntity.badRequest().build();
+				List<Member> temp = new ArrayList<>();
+				temp.add(member);
+
+				group.setMembers(temp);
 			}
+
+			return ResponseEntity.ok().body(repository.save(collection));
 		} else {
 			return ResponseEntity.badRequest().build();
 		}
 	}
 
 	/**
-	 * @param teamId
-	 * @param groupId
+	 * @param collection
+	 * @param memberId
+	 * @return
+	 */
+	@Nullable
+	private Group findGroupByMemberId(Collection collection, String memberId) {
+		List<Group> groups = collection.getGroups().stream().filter(
+				group -> group.getMembers().stream().filter(member -> member.getId().equals(memberId)).count() > 0)
+				.collect(Collectors.toList());
+
+		return !groups.isEmpty() ? groups.get(0) : null;
+	}
+
+	/**
+	 * @param memberId
 	 * @param member
 	 * @return
 	 */
 	@PostMapping(path = { URL_UPDATE_MEMBER_BY_ID }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = {
-			TEAM_ID, GROUP_ID, MEMBER_ID })
-	public ResponseEntity<Collection> update(@RequestParam(required = true, name = TEAM_ID) String teamId,
-			@RequestParam(required = true, name = GROUP_ID) String groupId,
-			@RequestParam(required = true, name = MEMBER_ID) String memberId, @RequestBody @Valid Member member) {
-		Collection collection = repository.findById(teamId).orElseThrow(null);
+			MEMBER_ID })
+	public ResponseEntity<Collection> update(@RequestParam(required = true, name = MEMBER_ID) String memberId,
+			@RequestBody @Valid Member member) {
+		Collection collection = repository.findByMemberId(memberId).orElse(null);
 
-		if (collection.getGroups() != null) {
-			List<Group> list = collection.getGroups().stream().filter(g -> g.getId().equals(groupId)).collect(Collectors
-					.toList());
+		if (collection != null) {
+			Group group = findGroupByMemberId(collection, memberId);
 
-			if (list != null && !list.isEmpty()) {
-				List<Member> members = list.get(0).getMembers();
+			if (group != null) {
+				List<Member> members = group.getMembers();
 
 				if (members != null) {
-					List<Member> memberList = members.stream().filter(m -> m.getId().equals(memberId)).collect(
-							Collectors.toList());
+					List<Member> memberList = members.stream().filter(m -> m.getId().equals(memberId))
+							.collect(Collectors.toList());
 
-					if (memberList != null && !memberList.isEmpty()) {
+					if (!memberList.isEmpty()) {
 						Member temp = memberList.get(0);
 
 						temp.setName(member.getName());
@@ -106,38 +117,32 @@ public class MemberController {
 						temp.setDislikes(member.getDislikes());
 
 						return ResponseEntity.ok().body(repository.save(collection));
-					} else {
-						return ResponseEntity.badRequest().build();
 					}
-				} else {
-					return ResponseEntity.badRequest().build();
 				}
-			} else {
-				return ResponseEntity.badRequest().build();
 			}
-		} else {
-			return ResponseEntity.badRequest().build();
 		}
+		return ResponseEntity.badRequest().build();
 	}
 
-	@GetMapping(path = { URL_GET_GROUP }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID, GROUP_ID,
-			MEMBER_ID })
-	public ResponseEntity<Group> get(@RequestParam(required = true, name = TEAM_ID) String teamId,
-			@RequestParam(required = true, name = GROUP_ID) String groupId,
-			@RequestParam(required = true, name = MEMBER_ID) String memberId) {
-		Collection collection = repository.findById(teamId).orElseThrow(null);
+	@GetMapping(path = { URL_GET_GROUP }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { MEMBER_ID })
+	public ResponseEntity<Member> get(@RequestParam(required = true, name = MEMBER_ID) String memberId) {
+		Collection collection = repository.findByMemberId(memberId).orElse(null);
 
-		if (collection.getGroups() == null) {
-			return ResponseEntity.ok().body(null);
-		} else {
-			List<Group> list = collection.getGroups().stream().filter(g -> g.getId().equals(groupId)).collect(Collectors
-					.toList());
-			if (list != null && !list.isEmpty()) {
-				return ResponseEntity.ok().body(list.get(0));
-			} else {
-				return ResponseEntity.badRequest().build();
+		if (collection != null) {
+			Group group = findGroupByMemberId(collection, memberId);
+
+			if (group != null) {
+				List<Member> members = group.getMembers();
+
+				if (members != null) {
+					List<Member> memberList = members.stream().filter(m -> m.getId().equals(memberId))
+							.collect(Collectors.toList());
+
+					return ResponseEntity.ok().body(memberList.get(0));
+				}
 			}
 		}
+		return ResponseEntity.badRequest().build();
 	}
 
 }

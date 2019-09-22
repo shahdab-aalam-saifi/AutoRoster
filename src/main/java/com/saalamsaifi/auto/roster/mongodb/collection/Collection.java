@@ -2,7 +2,6 @@ package com.saalamsaifi.auto.roster.mongodb.collection;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -22,7 +21,6 @@ public class Collection {
 	@Field(value = "teamId")
 	private String id;
 
-	@Indexed(unique = true)
 	private String name;
 
 	private int maxWfrlAllowed;

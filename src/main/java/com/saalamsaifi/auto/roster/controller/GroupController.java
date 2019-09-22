@@ -71,30 +71,26 @@ public class GroupController {
 	 */
 	@PostMapping(path = { URL_UPDATE_GROUP_BY_ID }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID,
 			GROUP_ID })
-	public ResponseEntity<List<Group>> update(@RequestParam(required = true, name = TEAM_ID) String teamId,
-			@RequestParam(required = true, name = GROUP_ID) String groupId, @RequestBody @Valid Group group) {
-		Collection collection = repository.findById(teamId).orElse(null);
+	public ResponseEntity<List<Group>> update(@RequestParam(required = true, name = GROUP_ID) String groupId,
+			@RequestBody @Valid Group group) {
+		Collection collection = repository.findByGroupId(groupId).orElse(null);
 
-		if (collection == null || collection.getGroups() == null) {
+		if (collection == null) {
 			return ResponseEntity.notFound().build();
 		}
 
-		List<Group> list = collection.getGroups().stream().filter(g -> g.getId().equals(groupId)).collect(Collectors
-				.toList());
+		List<Group> list = collection.getGroups().stream().filter(g -> g.getId().equals(groupId))
+				.collect(Collectors.toList());
 
-		if (list.isEmpty()) {
-			return ResponseEntity.notFound().build();
-		} else {
-			list.stream().findFirst().ifPresent(g -> {
-				g.setName(group.getName());
-				g.setMaxWfrlAllowed(group.getMaxWfrlAllowed());
+		list.stream().findFirst().ifPresent(g -> {
+			g.setName(group.getName());
+			g.setMaxWfrlAllowed(group.getMaxWfrlAllowed());
 
-				if (group.getMembers() != null) {
-					group.getMembers().forEach(member -> identityService.assignId(member));
-					g.setMembers(group.getMembers());
-				}
-			});
-		}
+			if (group.getMembers() != null) {
+				group.getMembers().forEach(member -> identityService.assignId(member));
+				g.setMembers(group.getMembers());
+			}
+		});
 
 		return ResponseEntity.ok().body(repository.save(collection).getGroups());
 	}
@@ -104,7 +100,7 @@ public class GroupController {
 	 * @return
 	 */
 	@GetMapping(path = { URL_GET_GROUP }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID })
-	public ResponseEntity<List<Group>> get(@RequestParam(required = true, name = TEAM_ID) String teamId) {
+	public ResponseEntity<List<Group>> getByTeamId(@RequestParam(required = true, name = TEAM_ID) String teamId) {
 		Collection collection = repository.findById(teamId).orElse(null);
 
 		if (collection == null) {
@@ -119,30 +115,20 @@ public class GroupController {
 	}
 
 	/**
-	 * @param teamId
 	 * @param groupId
 	 * @return
 	 */
-	@GetMapping(path = { URL_GET_GROUP }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { TEAM_ID,
-			GROUP_ID })
-	public ResponseEntity<Group> get(@RequestParam(required = true, name = TEAM_ID) String teamId,
-			@RequestParam(required = true, name = GROUP_ID) String groupId) {
-		Collection collection = repository.findById(teamId).orElse(null);
+	@GetMapping(path = { URL_GET_GROUP }, produces = { MediaType.APPLICATION_JSON_VALUE }, params = { GROUP_ID })
+	public ResponseEntity<Group> getByGroupId(@RequestParam(required = true, name = GROUP_ID) String groupId) {
+		Collection collection = repository.findByGroupId(groupId).orElse(null);
 
 		if (collection == null) {
-			return ResponseEntity.badRequest().build();
+			return ResponseEntity.notFound().build();
 		}
 
-		if (collection.getGroups() == null) {
-			return ResponseEntity.notFound().build();
-		} else {
-			List<Group> list = collection.getGroups().stream().filter(g -> g.getId().equals(groupId)).collect(Collectors
-					.toList());
-			if (list.isEmpty()) {
-				return ResponseEntity.notFound().build();
-			} else {
-				return ResponseEntity.ok().body(list.get(0));
-			}
-		}
+		List<Group> list = collection.getGroups().stream().filter(g -> g.getId().equals(groupId))
+				.collect(Collectors.toList());
+
+		return ResponseEntity.ok().body(list.get(0));
 	}
 }
