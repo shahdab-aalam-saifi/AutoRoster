@@ -1,0 +1,16 @@
+server:
+  port: 4236
+  
+logging:
+  level:
+    com.saalamsaifi.auto.roster: info
+    org:
+      mongodb: info
+      springframework.boot.autoconfigure.mongo.embedded: info
+
+spring:
+  data:
+    mongodb:
+      host: "localhost"
+      database: "auto_roster_test"
+      
