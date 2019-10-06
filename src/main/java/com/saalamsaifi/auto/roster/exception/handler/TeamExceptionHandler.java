@@ -19,8 +19,10 @@ public class TeamExceptionHandler extends ResponseEntityExceptionHandler {
 	@ExceptionHandler(value = { InvalidTeamIdException.class })
 	public final ResponseEntity<ErrorResponse> handleInvalidTeamIdException(InvalidTeamIdException exception,
 			WebRequest request) {
-		return new ResponseEntity<>(ErrorResponse.builder().time(LocalDateTime.now()).message(MessageFormat.format(
-				"id: {0}", exception.getInvalidId())).build(), HttpStatus.NOT_FOUND);
+		return new ResponseEntity<>(
+				ErrorResponse.builder().time(LocalDateTime.now())
+						.message(MessageFormat.format("id: {0}", exception.getInvalidId())).build(),
+				HttpStatus.NOT_FOUND);
 	}
 
 }
