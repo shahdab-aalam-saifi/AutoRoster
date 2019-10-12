@@ -1,5 +1,6 @@
 package com.saalamsaifi.auto.roster.model;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ public class WfrlAllocation {
 	private static final String SEPARATOR = "::";
 	private Team team;
 	private Map<String, Integer> groupAllocationRemaining;
-	private Map<String, ArrayList<String>> memberWfrlAllocations;
+	private Map<String, ArrayList<LocalDate>> memberWfrlAllocations;
 
 	public WfrlAllocation(final Team team) {
 		this.team = team;
@@ -31,7 +32,7 @@ public class WfrlAllocation {
 
 			List<Member> members = group.getMembers();
 
-			members.forEach(member -> memberWfrlAllocations.put(member.getName(), new ArrayList<String>()));
+			members.forEach(member -> memberWfrlAllocations.put(member.getName(), new ArrayList<>()));
 		});
 	}
 
@@ -45,7 +46,7 @@ public class WfrlAllocation {
 	/**
 	 * @return
 	 */
-	public Map<String, ArrayList<String>> getMemberWfrlAllocations() {
+	public Map<String, ArrayList<LocalDate>> getMemberWfrlAllocations() {
 		return memberWfrlAllocations;
 	}
 
@@ -79,14 +80,14 @@ public class WfrlAllocation {
 	 * @param day
 	 * @return
 	 */
-	public int allocateWfrl(String day) {
+	public int allocateWfrl(LocalDate day) {
 		int unallocatedWfrl = this.team.getMaxWfrlAllowed();
 
-		unallocatedWfrl = allocate(member -> member.isInterested() && !member.getLikes().contains(day)
-				&& !member.getDislikes().contains(day), day, unallocatedWfrl);
+		unallocatedWfrl = allocate(member -> member.isInterested() && !member.getLikes().contains(day.getDayOfWeek())
+				&& !member.getDislikes().contains(day.getDayOfWeek()), day, unallocatedWfrl);
 
-		unallocatedWfrl = allocate(member -> member.isInterested() && member.getLikes().contains(day), day,
-				unallocatedWfrl);
+		unallocatedWfrl = allocate(member -> member.isInterested() && member.getLikes().contains(day.getDayOfWeek()),
+				day, unallocatedWfrl);
 
 		return unallocatedWfrl;
 	}
@@ -97,7 +98,7 @@ public class WfrlAllocation {
 	 * @param unallocatedWfrl
 	 * @return
 	 */
-	private int allocate(Predicate<Member> predicate, String day, int unallocatedWfrl) {
+	private int allocate(Predicate<Member> predicate, LocalDate day, int unallocatedWfrl) {
 		List<String> candidate = wfrlCandidate(predicate);
 		Map<String, Integer> groupAllocations = this.getGroupAllocationRemaining();
 
@@ -109,9 +110,12 @@ public class WfrlAllocation {
 			String memberName = temp[1];
 
 			int maxWfrlAllowed = groupAllocations.get(groupName);
-			List<String> pAllocations = this.getMemberWfrlAllocations().get(memberName);
+			List<LocalDate> pAllocations = this.getMemberWfrlAllocations().get(memberName);
 
 			if (maxWfrlAllowed > 0 && pAllocations.size() < this.team.getMaxWfrlAllowed()) {
+				if (this.getMemberWfrlAllocations().get(memberName).contains(day.minusDays(1))) {
+					continue;
+				}
 				this.getMemberWfrlAllocations().get(memberName).add(day);
 				groupAllocations.put(groupName, --maxWfrlAllowed);
 				unallocatedWfrl--;

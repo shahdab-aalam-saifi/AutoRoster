@@ -1,5 +1,6 @@
 package com.saalamsaifi.auto.roster.model;
 
+import java.time.DayOfWeek;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
@@ -25,6 +26,6 @@ public class Member {
 	private String name;
 
 	private boolean isInterested;
-	private List<String> likes;
-	private List<String> dislikes;
+	private List<DayOfWeek> likes;
+	private List<DayOfWeek> dislikes;
 }
