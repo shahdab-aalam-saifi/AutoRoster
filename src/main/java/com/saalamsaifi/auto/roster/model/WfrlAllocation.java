@@ -1,5 +1,7 @@
 package com.saalamsaifi.auto.roster.model;
 
+import static com.saalamsaifi.auto.roster.constant.ProjectConstant.SEPARATOR;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +12,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 
 public class WfrlAllocation {
-	private static final String SEPARATOR = "::";
 	private Team team;
 	private Map<String, Integer> groupAllocationRemaining;
 	private Map<String, ArrayList<LocalDate>> memberWfrlAllocations;
@@ -32,7 +33,8 @@ public class WfrlAllocation {
 
 			List<Member> members = group.getMembers();
 
-			members.forEach(member -> memberWfrlAllocations.put(member.getName(), new ArrayList<>()));
+			members.forEach(member -> memberWfrlAllocations.put(group.getName() + SEPARATOR + member.getName(),
+					new ArrayList<>()));
 		});
 	}
 
@@ -68,11 +70,13 @@ public class WfrlAllocation {
 
 			members.forEach(member -> {
 				if (predicate.test(member)) {
-					candidateForAllocation.add(group.getName() + "::" + member.getName());
+					candidateForAllocation.add(group.getName() + SEPARATOR + member.getName());
 				}
 			});
 		});
 
+		Collections.shuffle(candidateForAllocation);
+		
 		return candidateForAllocation;
 	}
 
@@ -80,9 +84,7 @@ public class WfrlAllocation {
 	 * @param day
 	 * @return
 	 */
-	public int allocateWfrl(LocalDate day) {
-		int unallocatedWfrl = this.team.getMaxWfrlAllowed();
-
+	public int allocateWfrl(LocalDate day, int unallocatedWfrl) {
 		unallocatedWfrl = allocate(member -> member.isInterested() && !member.getLikes().contains(day.getDayOfWeek())
 				&& !member.getDislikes().contains(day.getDayOfWeek()), day, unallocatedWfrl);
 
@@ -110,13 +112,14 @@ public class WfrlAllocation {
 			String memberName = temp[1];
 
 			int maxWfrlAllowed = groupAllocations.get(groupName);
-			List<LocalDate> pAllocations = this.getMemberWfrlAllocations().get(memberName);
+			List<LocalDate> pAllocations = this.getMemberWfrlAllocations().get(groupName + SEPARATOR + memberName);
 
 			if (maxWfrlAllowed > 0 && pAllocations.size() < this.team.getMaxWfrlAllowed()) {
-				if (this.getMemberWfrlAllocations().get(memberName).contains(day.minusDays(1))) {
+				if (this.getMemberWfrlAllocations().get(groupName + SEPARATOR + memberName)
+						.contains(day.minusDays(1))) {
 					continue;
 				}
-				this.getMemberWfrlAllocations().get(memberName).add(day);
+				this.getMemberWfrlAllocations().get(groupName + SEPARATOR + memberName).add(day);
 				groupAllocations.put(groupName, --maxWfrlAllowed);
 				unallocatedWfrl--;
 			}

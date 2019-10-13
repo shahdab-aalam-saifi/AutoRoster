@@ -8,6 +8,8 @@ public class ProjectConstant {
 	// Project
 	public static final String BASE_PACKAGE = "com.saalamsaifi.auto.roster";
 	public static final String PROP_USER_HOME = "user.home";
+	public static final String SEPARATOR = "::";
+
 
 	// Sequence
 	public static final String TEAM_SEQUENCE = "team_sequence";
