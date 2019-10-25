@@ -9,6 +9,8 @@ public class ProjectConstant {
 	public static final String BASE_PACKAGE = "com.saalamsaifi.auto.roster";
 	public static final String PROP_USER_HOME = "user.home";
 	public static final String SEPARATOR = "::";
+	public static final String WFRL = "WFRL";
+	public static final String NO_WFRL = "";
 
 
 	// Sequence
@@ -20,4 +22,5 @@ public class ProjectConstant {
 	public static final String ID_PREFIX_TEAM = "T";
 	public static final String ID_PREFIX_GROUP = "G";
 	public static final String ID_PREFIX_MEMBER = "M";
+	
 }

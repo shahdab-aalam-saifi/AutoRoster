@@ -8,6 +8,8 @@ public final class PathMapping {
 	private static final String TEAM = "/team";
 	private static final String GROUP = "/group";
 	private static final String MEMBER = "/member";
+	private static final String QUICK = "/quick";
+	private static final String ROSTER = "/roster";
 
 	private static final String ADD = "/add";
 	private static final String UPDATE = "/update";
@@ -27,4 +29,6 @@ public final class PathMapping {
 	public static final String URL_ADD_NEW_MEMBER = MEMBER + ADD;
 	public static final String URL_UPDATE_MEMBER_BY_ID = MEMBER + UPDATE;
 	public static final String URL_GET_MEMBER = MEMBER + GET;
+
+	public static final String URL_QUICK_ROSTER = QUICK + ROSTER;
 }
