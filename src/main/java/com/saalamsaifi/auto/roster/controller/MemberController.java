@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.saalamsaifi.auto.roster.data.repository.TeamRepository;
 import com.saalamsaifi.auto.roster.model.Group;
@@ -28,7 +27,6 @@ import com.saalamsaifi.auto.roster.model.Member;
 import com.saalamsaifi.auto.roster.mongodb.collection.Collection;
 import com.saalamsaifi.auto.roster.service.IdentityService;
 
-@RestController
 public class MemberController {
 	@Autowired
 	private TeamRepository repository;
