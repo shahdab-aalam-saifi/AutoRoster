@@ -2,9 +2,12 @@ package com.saalamsaifi.auto.roster.service.impl;
 
 import static com.saalamsaifi.auto.roster.constant.ProjectConstant.SEPARATOR;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Set;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.FillPatternType;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Table;
+import com.saalamsaifi.auto.roster.config.RosterConfig;
 import com.saalamsaifi.auto.roster.service.ExportService;
 
 @Service
@@ -29,10 +33,12 @@ public class ExportToExcelServiceImpl implements ExportService {
 	private static final String NAME = "Name";
 
 	/**
-	 *
+	 * @param table
+	 * @param fileName
+	 * @return
 	 */
 	@Override
-	public void export(Table<String, String, String> table, String fileName) {
+	public boolean export(Table<String, String, String> table, String fileName) {
 		Set<String> rowKeys = table.rowKeySet();
 		Set<String> colKeys = table.columnKeySet();
 		int rowNumber = 0;
@@ -47,7 +53,7 @@ public class ExportToExcelServiceImpl implements ExportService {
 			setCellValue(headerRow, colNumber++, NAME);
 
 			for (String date : colKeys) {
-				setCellValue(headerRow, colNumber++, date);
+				setCellValue(headerRow, colNumber++, LocalDate.parse(date).format(RosterConfig.DATE_FORMAT));
 			}
 
 			for (String r : rowKeys) {
@@ -72,10 +78,15 @@ public class ExportToExcelServiceImpl implements ExportService {
 
 			// Write output to file
 			write(workbook, fileName);
+			
+			return true;
+		} catch (FileNotFoundException e) {
+			System.err.println("FileNotFoundException: " + e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("IOException: " + e.getMessage());
 		}
 
+		return false;
 	}
 
 	/**
@@ -93,12 +104,15 @@ public class ExportToExcelServiceImpl implements ExportService {
 	/**
 	 * @param workbook
 	 * @param fileName
+	 * @return
 	 */
 	private void write(final Workbook workbook, String fileName) {
 		try (FileOutputStream stream = new FileOutputStream(fileName)) {
 			workbook.write(stream);
+		} catch (FileNotFoundException e) {
+			System.err.println("FileNotFoundException: " + e.getMessage());
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("IOException: " + e.getMessage());
 		}
 	}
 
@@ -120,10 +134,6 @@ public class ExportToExcelServiceImpl implements ExportService {
 	private void mergeCell(final Sheet sheet, int rows, int column) {
 		int i = 0;
 
-		CellStyle style = sheet.getWorkbook().createCellStyle();
-		style.setAlignment(HorizontalAlignment.CENTER);
-		style.setVerticalAlignment(VerticalAlignment.CENTER);
-
 		while (i <= rows) {
 			Cell cell = sheet.getRow(i).getCell(column);
 			while (i + 1 <= rows
@@ -132,10 +142,24 @@ public class ExportToExcelServiceImpl implements ExportService {
 			}
 			if (i - cell.getRowIndex() > 0) {
 				sheet.addMergedRegion(new CellRangeAddress(cell.getRowIndex(), i, column, column));
-				cell.setCellStyle(style);
+				cell.setCellStyle(getCenterAlignment(sheet));
 			}
 			i++;
 		}
+	}
+
+	/**
+	 * @param sheet
+	 * @return
+	 */
+	private CellStyle getCenterAlignment(final Sheet sheet) {
+		Workbook workbook = sheet.getWorkbook();
+		CellStyle style = workbook.createCellStyle();
+
+		style.setAlignment(HorizontalAlignment.CENTER);
+		style.setVerticalAlignment(VerticalAlignment.CENTER);
+
+		return style;
 	}
 
 	/**
@@ -147,11 +171,9 @@ public class ExportToExcelServiceImpl implements ExportService {
 		Font font = workbook.createFont();
 		font.setBold(true);
 
-		CellStyle style = workbook.createCellStyle();
+		CellStyle style = getCenterAlignment(sheet);
 		style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
 		style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		style.setAlignment(HorizontalAlignment.CENTER);
-		style.setVerticalAlignment(VerticalAlignment.CENTER);
 		style.setFont(font);
 
 		for (int i = 0; i < columns; i++) {

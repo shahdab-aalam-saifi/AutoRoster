@@ -11,6 +11,7 @@ public class ProjectConstant {
 	public static final String SEPARATOR = "::";
 	public static final String WFRL = "WFRL";
 	public static final String NO_WFRL = "";
+	public static final String XLSX = ".xlsx";
 
 
 	// Sequence

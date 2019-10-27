@@ -84,7 +84,7 @@ public class WfrlAllocation {
 	 * @param day
 	 * @return
 	 */
-	public int allocateWfrl(LocalDate day, int unallocatedWfrl) {
+	public int allocateWfrl(final LocalDate day, int unallocatedWfrl) {
 		unallocatedWfrl = allocate(member -> member.isInterested() && !member.getLikes().contains(day.getDayOfWeek())
 				&& !member.getDislikes().contains(day.getDayOfWeek()), day, unallocatedWfrl);
 
