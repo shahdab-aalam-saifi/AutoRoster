@@ -12,9 +12,12 @@ import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
+import java.util.UUID;
 
 import javax.validation.Valid;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -32,6 +35,8 @@ import com.saalamsaifi.auto.roster.service.ExportService;
 
 @RestController
 public class QuickRosterController {
+	private static final Logger logger = LogManager.getLogger(QuickRosterController.class);
+	
 	@Autowired
 	private AutoRosterController arc;
 
@@ -84,6 +89,8 @@ public class QuickRosterController {
 	 */
 	@PostMapping(path = { URL_QUICK_ROSTER }, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<Resource> generateRoster(@RequestBody @Valid Team team) throws IOException {
+		logger.info("UUID: {}", UUID.randomUUID());
+
 		LocalDate monday = LocalDate.now().with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
 		LocalDate saturday = LocalDate.now().with(TemporalAdjusters.previous(DayOfWeek.SATURDAY));
 
