@@ -10,5 +10,8 @@ spring:
     continue-on-error: true
     
 roster:
-  date.format:dd/MM/yyyy
-  file.date.format:dd/MM/yyyy
+  date:
+    format: dd/MM/yyyy
+  file:
+    date:
+      format: dd/MM/yyyy

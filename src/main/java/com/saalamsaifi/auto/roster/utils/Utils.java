@@ -16,13 +16,13 @@ public class Utils {
 		return ObjectId.get().toHexString();
 	}
 
-	public static <T> T stringToObject(String json, ObjectMapper mapper, Class<T> _class) {
+	public static <T> T stringToObject(String json, ObjectMapper mapper, Class<T> clazz) {
 		if (mapper == null) {
 			throw new IllegalStateException("mapper == null");
 		}
 
 		try {
-			return mapper.readValue(json, _class);
+			return mapper.readValue(json, clazz);
 		} catch (IOException exception) {
 			exception.printStackTrace();
 			return null;
