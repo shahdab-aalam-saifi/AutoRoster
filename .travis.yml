@@ -19,6 +19,5 @@ addons:
     organization: "shahdab-aalam-saifi"
     token:
       secure: $SONAR_TOKEN
-#      secure: "b0cf350ab12015874e6f1a381e0215a1abff18d4"
 script: 
   - ./mvnw clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=shahdab-aalam-saifi_AutoRoster
