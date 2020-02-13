@@ -4,18 +4,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface SequenceService {
-	/**
-	 * @return
-	 */
-	String getNextTeamSequence();
+  /** @return */
+  String getNextTeamSequence();
 
-	/**
-	 * @return
-	 */
-	String getNextGroupSequence();
+  /** @return */
+  String getNextGroupSequence();
 
-	/**
-	 * @return
-	 */
-	String getNextMemberSequence();
+  /** @return */
+  String getNextMemberSequence();
 }

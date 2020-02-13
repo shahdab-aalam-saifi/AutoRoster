@@ -6,13 +6,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.junit4.SpringRunner;
 
-@IfProfileValue(name = "spring.profiles.active", values = { "test" })
+@IfProfileValue(
+    name = "spring.profiles.active",
+    values = {"test"})
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AutoRosterApplicationTests {
 
-	@Test
-	public void contextLoads() {
-	}
-
+  @Test
+  public void contextLoads() {}
 }
