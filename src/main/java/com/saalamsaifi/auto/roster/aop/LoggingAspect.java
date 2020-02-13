@@ -14,7 +14,7 @@ import com.saalamsaifi.auto.roster.model.LogEvent;
 public class LoggingAspect {
 	private static final Logger logger = LogManager.getLogger(LoggingAspect.class);
 
-	@Before(value = "execution(* com.saalamsaifi.auto.roster..*(..))")
+	//@Before(value = "execution(* com.saalamsaifi.auto.roster..*(..))")
 	public void before(JoinPoint point) {
 		LogEvent event = new LogEvent();
 

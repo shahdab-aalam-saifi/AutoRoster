@@ -3,7 +3,7 @@
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout
-				pattern="%style{%d{ISO8601}} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%c{-10}}{bright,yellow}: %msg%n%throwable" />
+				pattern="%style{%d{ISO8601}}{black} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable" />
 		</Console>
 
 		<RollingFile name="RollingFile"
@@ -13,7 +13,7 @@
 				<pattern>%d %p %C{1.} [%t] %m%n</pattern>
 			</PatternLayout>
 			<Policies>
-				<!-- Roll-over on startup, daily and when the file reaches 10 MegaBytes -->
+				Roll-over on startup, daily and when the file reaches 10 MegaBytes
 				<OnStartupTriggeringPolicy />
 				<SizeBasedTriggeringPolicy size="10 MB" />
 				<TimeBasedTriggeringPolicy />
@@ -30,4 +30,4 @@
 		<Logger name="com.saalamsaifi.auto.roster*" level="trace"></Logger>
 	</Loggers>
 
-</Configuration>
+</Configuration> 

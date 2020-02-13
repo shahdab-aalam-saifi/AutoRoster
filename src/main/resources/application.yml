@@ -4,10 +4,6 @@ server:
 logging:
   level:
     com.saalamsaifi.auto.roster: trace
-
-spring:
-  datasource:
-    continue-on-error: true
     
 roster:
   date:
@@ -15,3 +11,5 @@ roster:
   file:
     date:
       format: dd/MM/yyyy
+      
+      
