@@ -12,8 +12,7 @@ public class Member {
   @Field("memberId")
   private String id;
 
-  @NotBlank
-  private String name;
+  @NotBlank private String name;
 
   private boolean isInterested;
 
@@ -55,12 +54,18 @@ public class Member {
       return false;
     }
     Member other = (Member) obj;
-    return Objects.equals(dislikes, other.dislikes) && Objects.equals(id, other.id)
-        && isInterested == other.isInterested && Objects.equals(likes, other.likes)
+    return Objects.equals(dislikes, other.dislikes)
+        && Objects.equals(id, other.id)
+        && isInterested == other.isInterested
+        && Objects.equals(likes, other.likes)
         && Objects.equals(name, other.name);
   }
 
-  Member(String id, String name, boolean isInterested, List<DayOfWeek> likes,
+  Member(
+      String id,
+      String name,
+      boolean isInterested,
+      List<DayOfWeek> likes,
       List<DayOfWeek> dislikes) {
     this.id = id;
     this.name = name;
@@ -114,14 +119,32 @@ public class Member {
     }
 
     public String toString() {
-      return "Member.MemberBuilder(id=" + this.id + ", name=" + this.name + ", isInterested="
-          + this.isInterested + ", likes=" + this.likes + ", dislikes=" + this.dislikes + ")";
+      return "Member.MemberBuilder(id="
+          + this.id
+          + ", name="
+          + this.name
+          + ", isInterested="
+          + this.isInterested
+          + ", likes="
+          + this.likes
+          + ", dislikes="
+          + this.dislikes
+          + ")";
     }
   }
 
   public String toString() {
-    return "Member(id=" + getId() + ", name=" + getName() + ", isInterested=" + isInterested()
-        + ", likes=" + getLikes() + ", dislikes=" + getDislikes() + ")";
+    return "Member(id="
+        + getId()
+        + ", name="
+        + getName()
+        + ", isInterested="
+        + isInterested()
+        + ", likes="
+        + getLikes()
+        + ", dislikes="
+        + getDislikes()
+        + ")";
   }
 
   public String getId() {

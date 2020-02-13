@@ -1,7 +1,7 @@
 package com.saalamsaifi.auto.roster.util;
 
-import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 
 public final class TestUtils {
   private static ObjectMapper mapper;
@@ -9,7 +9,7 @@ public final class TestUtils {
   private TestUtils() {
     super();
   }
-  
+
   public static void setObjectMapper(ObjectMapper _mapper) {
     if (mapper == null && _mapper != null) {
       mapper = _mapper;

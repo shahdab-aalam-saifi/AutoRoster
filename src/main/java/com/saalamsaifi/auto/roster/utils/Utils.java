@@ -1,8 +1,8 @@
 package com.saalamsaifi.auto.roster.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import org.bson.types.ObjectId;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Utils {
   private Utils() {

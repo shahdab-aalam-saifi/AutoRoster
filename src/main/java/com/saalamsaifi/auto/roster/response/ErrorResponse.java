@@ -48,7 +48,8 @@ public class ErrorResponse {
       return false;
     }
     ErrorResponse other = (ErrorResponse) obj;
-    return Objects.equals(message, other.message) && Objects.equals(time, other.time)
+    return Objects.equals(message, other.message)
+        && Objects.equals(time, other.time)
         && Objects.equals(url, other.url);
   }
 
@@ -79,8 +80,13 @@ public class ErrorResponse {
     }
 
     public String toString() {
-      return "ErrorResponse.ErrorResponseBuilder(message=" + this.message + ", url=" + this.url
-          + ", time=" + this.time + ")";
+      return "ErrorResponse.ErrorResponseBuilder(message="
+          + this.message
+          + ", url="
+          + this.url
+          + ", time="
+          + this.time
+          + ")";
     }
   }
 
@@ -97,7 +103,12 @@ public class ErrorResponse {
   }
 
   public String toString() {
-    return "ErrorResponse(message=" + getMessage() + ", url=" + getUrl() + ", time=" + getTime()
+    return "ErrorResponse(message="
+        + getMessage()
+        + ", url="
+        + getUrl()
+        + ", time="
+        + getTime()
         + ")";
   }
 }

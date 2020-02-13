@@ -18,7 +18,7 @@ public class ProjectConstant {
   public static final String ID_PREFIX_TEAM = "T";
   public static final String ID_PREFIX_GROUP = "G";
   public static final String ID_PREFIX_MEMBER = "M";
-  
+
   private ProjectConstant() {
     super();
   }

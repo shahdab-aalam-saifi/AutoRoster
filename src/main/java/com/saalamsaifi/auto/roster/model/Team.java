@@ -10,14 +10,11 @@ import javax.validation.constraints.PositiveOrZero;
 public class Team {
   private String id;
 
-  @NotBlank
-  private String name;
+  @NotBlank private String name;
 
-  @PositiveOrZero
-  private int maxWfrlAllowed;
+  @PositiveOrZero private int maxWfrlAllowed;
 
-  @Valid
-  private List<Group> groups;
+  @Valid private List<Group> groups;
 
   Team(String id, String name, int maxWfrlAllowed, List<Group> groups) {
     this.id = id;
@@ -80,14 +77,28 @@ public class Team {
     }
 
     public String toString() {
-      return "Team.TeamBuilder(id=" + this.id + ", name=" + this.name + ", maxWfrlAllowed="
-          + this.maxWfrlAllowed + ", groups=" + this.groups + ")";
+      return "Team.TeamBuilder(id="
+          + this.id
+          + ", name="
+          + this.name
+          + ", maxWfrlAllowed="
+          + this.maxWfrlAllowed
+          + ", groups="
+          + this.groups
+          + ")";
     }
   }
 
   public String toString() {
-    return "Team(id=" + getId() + ", name=" + getName() + ", maxWfrlAllowed=" + getMaxWfrlAllowed()
-        + ", groups=" + getGroups() + ")";
+    return "Team(id="
+        + getId()
+        + ", name="
+        + getName()
+        + ", maxWfrlAllowed="
+        + getMaxWfrlAllowed()
+        + ", groups="
+        + getGroups()
+        + ")";
   }
 
   public String getId() {

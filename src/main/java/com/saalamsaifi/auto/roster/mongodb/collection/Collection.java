@@ -76,13 +76,22 @@ public class Collection {
       return false;
     }
     Collection other = (Collection) obj;
-    return Objects.equals(groups, other.groups) && Objects.equals(id, other.id)
-        && maxWfrlAllowed == other.maxWfrlAllowed && Objects.equals(name, other.name);
+    return Objects.equals(groups, other.groups)
+        && Objects.equals(id, other.id)
+        && maxWfrlAllowed == other.maxWfrlAllowed
+        && Objects.equals(name, other.name);
   }
 
   public String toString() {
-    return "Collection(id=" + getId() + ", name=" + getName() + ", maxWfrlAllowed="
-        + getMaxWfrlAllowed() + ", groups=" + getGroups() + ")";
+    return "Collection(id="
+        + getId()
+        + ", name="
+        + getName()
+        + ", maxWfrlAllowed="
+        + getMaxWfrlAllowed()
+        + ", groups="
+        + getGroups()
+        + ")";
   }
 
   public static class CollectionBuilder {
@@ -119,8 +128,15 @@ public class Collection {
     }
 
     public String toString() {
-      return "Collection.CollectionBuilder(id=" + this.id + ", name=" + this.name
-          + ", maxWfrlAllowed=" + this.maxWfrlAllowed + ", groups=" + this.groups + ")";
+      return "Collection.CollectionBuilder(id="
+          + this.id
+          + ", name="
+          + this.name
+          + ", maxWfrlAllowed="
+          + this.maxWfrlAllowed
+          + ", groups="
+          + this.groups
+          + ")";
     }
   }
 }

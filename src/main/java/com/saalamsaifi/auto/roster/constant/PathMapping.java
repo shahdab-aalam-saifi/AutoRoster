@@ -27,7 +27,7 @@ public final class PathMapping {
   public static final String URL_GET_MEMBER = MEMBER + GET;
 
   public static final String URL_QUICK_ROSTER = QUICK + ROSTER;
-  
+
   private PathMapping() {
     super();
   }

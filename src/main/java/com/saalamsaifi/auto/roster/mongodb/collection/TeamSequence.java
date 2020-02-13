@@ -8,8 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("team_sequence")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TeamSequence {
-  @Id
-  private String id;
+  @Id private String id;
 
   private String sequence;
 

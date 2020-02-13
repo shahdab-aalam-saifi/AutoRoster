@@ -8,8 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document("group_sequence")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GroupSequence {
-  @Id
-  private String id;
+  @Id private String id;
 
   private String sequence;
 
@@ -28,7 +27,6 @@ public class GroupSequence {
   public void setSequence(String sequence) {
     this.sequence = sequence;
   }
-
 
   @Override
   public int hashCode() {
