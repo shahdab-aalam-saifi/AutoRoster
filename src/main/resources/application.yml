@@ -4,12 +4,3 @@ server:
 logging:
   level:
     com.saalamsaifi.auto.roster: trace
-    
-roster:
-  date:
-    format: dd/MM/yyyy
-  file:
-    date:
-      format: dd/MM/yyyy
-      
-      

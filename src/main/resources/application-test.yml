@@ -7,10 +7,4 @@ logging:
     org:
       mongodb: info
       springframework.boot.autoconfigure.mongo.embedded: info
-
-spring:
-  data:
-    mongodb:
-      host: "localhost"
-      database: "auto_roster_test"
       

@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 public class RosterConfig {
   private RosterConfig() {}
 
-  private static String dateFormat = "dd/MM/yyyy";
+  private static final String dateFormat = "dd/MM/yyyy";
 
-  private static String fileDateFormat = "dd_MM_yyyy";
+  private static final String fileDateFormat = "dd_MM_yyyy";
 
   public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern(dateFormat);
   public static final DateTimeFormatter FILE_DATE_FORMAT =

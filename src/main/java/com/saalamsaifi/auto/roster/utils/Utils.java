@@ -1,13 +1,13 @@
 package com.saalamsaifi.auto.roster.utils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.bson.types.ObjectId;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Utils {
+  private Utils() {
+    super();
+  }
 
   public static String getObjectId() {
     return ObjectId.get().toHexString();

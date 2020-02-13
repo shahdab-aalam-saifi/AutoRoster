@@ -1,14 +1,15 @@
 package com.saalamsaifi.auto.roster.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestUtils {
   private static ObjectMapper mapper;
 
+  private TestUtils() {
+    super();
+  }
+  
   public static void setObjectMapper(ObjectMapper _mapper) {
     if (mapper == null && _mapper != null) {
       mapper = _mapper;

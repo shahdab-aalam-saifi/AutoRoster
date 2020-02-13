@@ -1,9 +1,5 @@
 package com.saalamsaifi.auto.roster.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProjectConstant {
   // Project
   public static final String BASE_PACKAGE = "com.saalamsaifi.auto.roster";
@@ -22,4 +18,8 @@ public class ProjectConstant {
   public static final String ID_PREFIX_TEAM = "T";
   public static final String ID_PREFIX_GROUP = "G";
   public static final String ID_PREFIX_MEMBER = "M";
+  
+  private ProjectConstant() {
+    super();
+  }
 }

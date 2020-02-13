@@ -1,9 +1,5 @@
 package com.saalamsaifi.auto.roster.constant;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PathMapping {
   private static final String TEAM = "/team";
   private static final String GROUP = "/group";
@@ -31,4 +27,8 @@ public final class PathMapping {
   public static final String URL_GET_MEMBER = MEMBER + GET;
 
   public static final String URL_QUICK_ROSTER = QUICK + ROSTER;
+  
+  private PathMapping() {
+    super();
+  }
 }
