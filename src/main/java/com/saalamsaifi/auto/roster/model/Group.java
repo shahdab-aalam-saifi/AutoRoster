@@ -1,34 +1,27 @@
 package com.saalamsaifi.auto.roster.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.PositiveOrZero;
-
-import org.springframework.data.mongodb.core.mapping.Field;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @Builder
 @ToString
 @JsonInclude(value = Include.NON_NULL)
 public class Group {
-	@Field(value = "groupId")
-	private String id;
+  @Field(value = "groupId")
+  private String id;
 
-	@NotBlank
-	private String name;
+  @NotBlank private String name;
 
-	@PositiveOrZero
-	private int maxWfrlAllowed;
+  @PositiveOrZero private int maxWfrlAllowed;
 
-	@Valid
-	private List<Member> members;
+  @Valid private List<Member> members;
 }

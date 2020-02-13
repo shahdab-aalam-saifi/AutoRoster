@@ -9,6 +9,6 @@ import lombok.Setter;
 @Getter
 public class InvalidTeamIdException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
-	private final String invalidId;
+  private static final long serialVersionUID = 1L;
+  private final String invalidId;
 }
