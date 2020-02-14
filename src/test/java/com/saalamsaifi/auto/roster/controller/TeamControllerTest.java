@@ -2,12 +2,6 @@ package com.saalamsaifi.auto.roster.controller;
 
 import static com.saalamsaifi.auto.roster.util.TestUtils.stringToJsonObject;
 import static org.junit.Assert.assertEquals;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.saalamsaifi.auto.roster.data.repository.TeamRepository;
-import com.saalamsaifi.auto.roster.model.Team;
-import com.saalamsaifi.auto.roster.mongodb.collection.Collection;
-import com.saalamsaifi.auto.roster.util.TestUtils;
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
@@ -19,12 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.junit4.SpringRunner;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.saalamsaifi.auto.roster.data.repository.TeamRepository;
+import com.saalamsaifi.auto.roster.model.Team;
+import com.saalamsaifi.auto.roster.mongodb.collection.Collection;
+import com.saalamsaifi.auto.roster.util.TestUtils;
 
-@IfProfileValue(
-    name = "spring.profiles.active",
-    values = {"test"})
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)

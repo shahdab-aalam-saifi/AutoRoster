@@ -4,3 +4,9 @@ server:
 logging:
   level:
     com.saalamsaifi.auto.roster: trace
+    
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
