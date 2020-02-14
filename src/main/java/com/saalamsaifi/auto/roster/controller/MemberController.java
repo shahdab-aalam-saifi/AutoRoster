@@ -5,6 +5,12 @@ import static com.saalamsaifi.auto.roster.constant.PathMapping.URL_GET_GROUP;
 import static com.saalamsaifi.auto.roster.constant.PathMapping.URL_UPDATE_MEMBER_BY_ID;
 import static com.saalamsaifi.auto.roster.constant.RequestParameter.GROUP_ID;
 import static com.saalamsaifi.auto.roster.constant.RequestParameter.MEMBER_ID;
+
+import com.saalamsaifi.auto.roster.data.repository.TeamRepository;
+import com.saalamsaifi.auto.roster.model.Group;
+import com.saalamsaifi.auto.roster.model.Member;
+import com.saalamsaifi.auto.roster.mongodb.collection.Collection;
+import com.saalamsaifi.auto.roster.service.IdentityService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,11 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.saalamsaifi.auto.roster.data.repository.TeamRepository;
-import com.saalamsaifi.auto.roster.model.Group;
-import com.saalamsaifi.auto.roster.model.Member;
-import com.saalamsaifi.auto.roster.mongodb.collection.Collection;
-import com.saalamsaifi.auto.roster.service.IdentityService;
 
 @RestController
 public class MemberController {
